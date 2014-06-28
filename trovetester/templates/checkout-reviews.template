@@ -1,6 +1,11 @@
+echo CHECKING OUT BLUEPRINT REVIEWS
 {% for review in review_list -%}
+echo cd /opt/stack
 cd /opt/stack
+echo git clone https://github.com/openstack/{{ review.project }}.git
 git clone https://github.com/openstack/{{ review.project }}.git
+echo cd {{ review.project }}
 cd {{ review.project }}
+echo {{ review.checkout_command }}
 {{ review.checkout_command }}
 {% endfor -%}
