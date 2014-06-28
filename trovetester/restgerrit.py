@@ -7,14 +7,11 @@ import sys
 from requests.auth import HTTPDigestAuth
 
 PATH = os.path.realpath('./..')
-if len(sys.argv) < 3:
+if len(sys.argv) < 4:
     print("usage: python restgerrit.py user pass")
     sys.exit(1)
 MY_DIGEST_AUTH = HTTPDigestAuth(sys.argv[1], sys.argv[2])
-
-#TODO make these into cmd parameters
-review_number = 83503
-blueprint_name = "configuration-parameters-in-db"
+blueprint_name = sys.argv[3]
 
 def get_blueprint_reviews(blueprint_name):
     REVIEW_URL = "https://review.openstack.org/a/changes/?q=topic:bp/%s"
@@ -22,7 +19,6 @@ def get_blueprint_reviews(blueprint_name):
     resp = json.loads(r.text[5:])
     output = []
     for review in resp:
-        project = review['project']
         number = review['_number']
         output.append(get_review(number))
     return output
