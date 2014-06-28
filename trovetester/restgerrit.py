@@ -3,10 +3,14 @@ import requests
 import jinja2
 import os
 import stat
+import sys
 from requests.auth import HTTPDigestAuth
 
 PATH = os.path.realpath('./..')
-MY_DIGEST_AUTH = HTTPDigestAuth('username', 'password')
+if len(sys.argv) < 3:
+    print("usage: python restgerrit.py user pass")
+    sys.exit(1)
+MY_DIGEST_AUTH = HTTPDigestAuth(sys.argv[1], sys.argv[2])
 
 #TODO make these into cmd parameters
 review_number = 83503
@@ -39,12 +43,12 @@ def get_review(review_number):
 review_list = get_blueprint_reviews(blueprint_name)
 print(review_list)
 
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(PATH + "trovetester/templates"))
+env = jinja2.Environment(loader=jinja2.FileSystemLoader(PATH + "/trovetester/templates"))
 # env = jinja2.Environment(loader=jinja2.PackageLoader("trovetester", "templates"))
-template = env.get_template('kickit.sh')
+template = env.get_template('checkout-reviews.template')
 rendered = template.render(review_list=review_list)
 
-with open(PATH + "outputkickit.sh", 'w') as f:
+with open(PATH + "/checkout-reviews.sh", 'w') as f:
     f.write(rendered)
-st = os.stat(PATH + "outputkickit.sh")
-os.chmod(PATH + "outputkickit.sh", st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+st = os.stat(PATH + "/checkout-reviews.sh")
+os.chmod(PATH + "/checkout-reviews.sh", st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)

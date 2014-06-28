@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     # config.vm.network :forwarded_port, guest: 80, host: 8080
   end
 
-  config.vm.provision "shell", path: "outputkickit.sh"
+  config.vm.provision "shell", path: "prep.sh"
 
   config.vm.provider :libvirt do |libvirt|
     libvirt.memory = 2048

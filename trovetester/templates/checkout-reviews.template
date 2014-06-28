@@ -1,0 +1,6 @@
+{% for review in review_list -%}
+cd /opt/stack
+git clone https://github.com/openstack/{{ review.project }}.git
+cd {{ review.project }}
+{{ review.checkout_command }}
+{% endfor -%}
