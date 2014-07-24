@@ -13,8 +13,11 @@ cd {{ review.project }}
 {% endfor -%}
 cd ~
 git clone https://github.com/openstack-dev/devstack.git
-git clone https://github.com/openstack/trove-integration.git
-cd ~/trove-integration/scripts
+cd /opt/stack
+if [ ! -d trove-integration ]; then
+    git clone https://github.com/openstack/trove-integration.git
+fi
+cd trove-integration/scripts
 ./redstack install
 ./redstack kick-start mysql
 ./redstack int-tests
