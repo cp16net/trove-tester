@@ -17,6 +17,9 @@ blueprint_name = sys.argv[3]
 def get_blueprint_reviews(blueprint_name):
     REVIEW_URL = "https://review.openstack.org/a/changes/?q=topic:bp/%s"
     r = requests.get(REVIEW_URL % blueprint_name, auth=MY_DIGEST_AUTH)
+    if r.status_code != requests.codes.ok:
+        r.raise_for_status()
+        sys.exit("1")
     resp = json.loads(r.text[5:])
     output = []
     for review in resp:
@@ -33,7 +36,7 @@ def get_review(review_number):
     project = resp[0]['project'].split('/')[-1]
     revisions = resp[0]['revisions']
     revision_fetch = revisions[revisions.keys()[0]]['fetch']
-    checkout_command = revision['anonymous http']['commands']['Checkout']
+    checkout_command = revision_fetch['anonymous http']['commands']['Checkout']
 
     return {
         'project': project,
