@@ -8,15 +8,15 @@ from requests.auth import HTTPDigestAuth
 
 PATH = os.path.realpath('./..')
 if len(sys.argv) < 4:
-    print("usage: python restgerrit.py user pass blueprint_name")
+    print("usage: python restgerrit.py user pass gerrit_topic")
     sys.exit(1)
 MY_DIGEST_AUTH = HTTPDigestAuth(sys.argv[1], sys.argv[2])
-blueprint_name = sys.argv[3]
+gerrit_topic = sys.argv[3]
 
 
-def get_blueprint_reviews(blueprint_name):
-    REVIEW_URL = "https://review.openstack.org/a/changes/?q=topic:bp/%s"
-    r = requests.get(REVIEW_URL % blueprint_name, auth=MY_DIGEST_AUTH)
+def get_reviews_by_topic(gerrit_topic):
+    REVIEW_URL = "https://review.openstack.org/a/changes/?q=topic:%s"
+    r = requests.get(REVIEW_URL % gerrit_topic, auth=MY_DIGEST_AUTH)
     if r.status_code != requests.codes.ok:
         r.raise_for_status()
         sys.exit("1")
@@ -44,7 +44,7 @@ def get_review(review_number):
     }
 
 
-review_list = get_blueprint_reviews(blueprint_name)
+review_list = get_reviews_by_topic(gerrit_topic)
 print(review_list)
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(
