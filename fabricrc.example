@@ -1,0 +1,28 @@
+# Copy this file to ~/ and rename it .fabricrc
+# See http://docs.fabfile.org/en/1.3.3/usage/fab.html
+# and http://docs.fabfile.org/en/1.3.3/usage/env.html for more documentation.
+
+
+# OpenStack Configuration Parameters
+
+# Compute version (default is 2)
+OS_VERSION=2
+
+# Credentials
+OS_USERNAME=foo
+OS_PASSWORD=bar
+
+# Full name of the tenant or project
+OS_TENANT_NAME=122222222-Project
+
+# Id of the tenant or project
+OS_TENANT_ID=1111111111
+
+# Authentication URL set usually to a keystone endpoint
+OS_AUTH_URL=https://region-b.geo-1.identity.hpcloudsvc.com:35357/v2.0/
+
+# Region of compute to use
+OS_REGION_NAME=region-a.geo-1
+
+# Keypair name to use that is already setup
+KEYPAIR_NAME=foo
