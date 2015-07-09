@@ -12,10 +12,13 @@ Requirements
 ------------
 
     sudo pip install virtualenvwrapper
-    echo "export WORKON_HOME=$HOME/.virtualenvs
-        export PROJECT_HOME=$HOME/Devel
-        export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
-        source /usr/local/bin/virtualenvwrapper_lazy.sh" >> ~/.bashrc
+
+Add this to your ~/.bashrc or ~/.zshrc file.
+
+    export WORKON_HOME=$HOME/.virtualenvs
+    export PROJECT_HOME=$HOME/Devel
+    export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
+    source /usr/local/bin/virtualenvwrapper_lazy.sh
 
 Copy the .fabricrc file to your home directory and edit the file with your
 OpenStack credentials.
