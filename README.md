@@ -1,20 +1,83 @@
 trove-tester
 ============
 
-These are some scripts that help make development a bit easier. There is a
-vagrant file that i have not had much luck with in the last month but it
+These are some scripts that help make development a bit easier with devstack
+and Trove.
+
+There is a vagrant file that i have not had much luck with in the last month but it
 worked a while back. (needs some work)
 
+
+Requirements
+------------
+
+    sudo pip install virtualenvwrapper
+    echo "export WORKON_HOME=$HOME/.virtualenvs
+        export PROJECT_HOME=$HOME/Devel
+        export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
+        source /usr/local/bin/virtualenvwrapper_lazy.sh" >> ~/.bashrc
+
+Copy the .fabricrc file to your home directory and edit the file with your
+OpenStack credentials.
+
+    cp fabricrc.example ~/.fabricrc
+    emacs ~/.fabricrc
 
 Fabric
 ------
 
-create a virtualenv
-pip install fabric
-fab -l
+Create a new virtualenv and install the dependencies (ALWAYS create new
+python virutalenvs when working on a project)
+
+    mkvirtualenv test
+    pip install fabric
+    fab -l
+
+After you have the virtualenv and need to use it later do this.
+
+    workon test
+    fab -l
+
+
+Setup
+-----
+
+In your OpenStack project make sure there are a few things setup prior to
+running this.
+
+#. Add your keypair to the OpenStack deployment with a name that matches
+the .fabricrc KEYPAIR_NAME.
+#. Create some floating ips that are not attached to an instance.
+#. Create a devstack network that is 10.2.0.0/24
+#. Create an Interface on your router for 10.2.0.1
+
+
+Examples
+--------
+
+List the all the servers and network ips attached
+
+    fab list
+
+Boot a new server as a choose your own adventure.
+
+    fab boot
+
+Syncronize the all the projects in `../` local directory to `/opt/stack`
+remote directory. Also setup a few helper commands once you ssh into your
+remote system.
+
+    fab sync
+
+ssh into your remote system after running the `fab sync` cmd and your should
+have a few convience commands you are run.
+
+- `redstack` - allows you to run the redstack cmd from any directory.
+- `fix-iptables.sh` - allows the guest instances to talk out to the interwebs.
 
 
 TODO
 ----
 
 - work on Vagrantfile setup
+
