@@ -37,6 +37,7 @@ After you have the virtualenv and need to use it later do this.
 
     workon test
     fab -l
+    fab -d boot
 
 
 Setup
