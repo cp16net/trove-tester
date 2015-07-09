@@ -45,12 +45,12 @@ Setup
 In your OpenStack project make sure there are a few things setup prior to
 running this.
 
-#. Add your keypair to the OpenStack deployment with a name that matches
+- Add your keypair to the OpenStack deployment with a name that matches
 the .fabricrc KEYPAIR_NAME.
-#. Create a devstack network that is 10.2.0.0/24
-#. Create an Interface on your router for 10.2.0.1
-#. Create some floating ips that are not attached to an instance.
-#. Add entries to your `~/.ssh/config` file of the names you want to use for
+- Create a devstack network that is 10.2.0.0/24
+- Create an Interface on your router for 10.2.0.1
+- Create some floating ips that are not attached to an instance.
+- Add entries to your `~/.ssh/config` file of the names you want to use for
 your floating ips you created
 
 
