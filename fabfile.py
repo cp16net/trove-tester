@@ -49,9 +49,10 @@ def sync(project=None):
         rsync_project(local_dir="../%s/" % project,
                       remote_dir="/opt/stack/%s" % project,
                       exclude=SYNC_EXCLUDES)
-    rsync_project(local_dir="../",
-                  remote_dir="/opt/stack",
-                  exclude=SYNC_EXCLUDES)
+    else:
+        rsync_project(local_dir="../",
+                      remote_dir="/opt/stack",
+                      exclude=SYNC_EXCLUDES)
     sudo('/opt/stack/trove-tester/prep.sh')
 
 
