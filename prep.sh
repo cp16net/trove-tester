@@ -1,16 +1,5 @@
 #!/bin/bash
 
-
-function add_fix_iptables() {
-	echo Creating fix-iptables.sh
-	FIXSH="/usr/local/bin/fix-iptables.sh"
-	if [ ! -e "$FIXSH" ]; then
-		echo "#!/bin/bash" > $FIXSH
-		echo "sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE" >> $FIXSH
-		chmod +x $FIXSH
-	fi
-}
-
 function add_redstack() {
 	echo Creating redstack command
 	REDSTACK="/usr/local/bin/redstack"
@@ -40,9 +29,22 @@ EOF
     fi
 }
 
+function install_dependencies() {
+    apt-get update
+    apt-get -y install git curl wget build-essential python-mysqldb \
+        python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
+        python-pip libmysqlclient-dev screen emacs24-nox \
+        libsasl2-dev tmux
+    pip install virtualenv
+    pip install tox==1.6.1
+    pip install setuptools
+    cp /opt/stack/trove-tester/files/.gitconfig /home/ubuntu/.gitconfig
+    chown ubuntu:ubuntu /home/ubuntu/.gitconfig
+}
+
 add_fix_iptables
 add_redstack
 add_mycnf
+install_dependencies
 
-# TODO(cp16net) maybe i should run this inline as the vagrant/ubuntu user
-echo "redstack install && redstack kick-start mysql && fix-iptables.sh"
+sudo su - ubuntu -c "redstack install && redstack kick-start mysql"

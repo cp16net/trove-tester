@@ -38,7 +38,7 @@ env.use_ssh_config = True
 def sync(project=None):
     """Sync the local code to the server"""
     sed(REMOTE_HOSTS_FILE,
-        '127.0.0.1 localhost',
+        '^127.0.0.1 localhost$',
         '127.0.0.1 localhost %s' % env.host_string,
         use_sudo=True)
     if not exists('/opt/stack'):
@@ -53,6 +53,31 @@ def sync(project=None):
         rsync_project(local_dir="../",
                       remote_dir="/opt/stack",
                       exclude=SYNC_EXCLUDES)
+    prep(run_once=True)
+
+
+@task
+def host():
+    if not env.host_string:
+        # get host list from .ssh/config file
+        hosts = local('cat ~/.ssh/config | grep "Host "', capture=True)
+        hosts = hosts.split('\n')
+        hosts = [host.split(' ')[1] for host in hosts]
+        print(hosts)
+        for x, host in enumerate(hosts):
+            print(green('%s\t%s' % (x, host)))
+        selected_host = prompt("Choose a host:")
+        env.hosts = [hosts[int(selected_host)]]
+        print(cyan("Using host:" % env.hosts))
+
+
+@task
+def prep(run_once=None):
+    test_file = "/home/ubuntu/.my.cnf"
+    if run_once:
+        if exists(test_file):
+            print(cyan("Prep has already run."))
+            return
     sudo('/opt/stack/trove-tester/prep.sh')
 
 
@@ -81,6 +106,7 @@ def list():
         instances = cli.servers.list()
         for inst in instances:
             print(inst.name, inst.addresses)
+
 
 @task
 def boot(name=None):
@@ -149,6 +175,7 @@ def _network_list(client):
         print(green('%s\t%s' % (x, n['name'])))
     selected_network = prompt("Choose a network number:")
     return networks[int(selected_network)]
+
 
 def _floating_ip_list(client):
     floating_ips = client.floating_ips.list()
