@@ -40,6 +40,10 @@ Vagrant.configure("2") do |config|
       chown vagrant /opt/stack
     SCRIPT
 
+    devstack.vm.provision :shell, :inline => <<-SCRIPT
+      printf '\nexport USING_VAGRANT=true' >> /home/vagrant/.bashrc
+    SCRIPT
+
     devstack.vm.provision "shell", path: "prep.sh"
   end
 end
