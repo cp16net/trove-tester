@@ -40,6 +40,8 @@ function install_dependencies() {
     pip install setuptools
     cp /opt/stack/trove-tester/files/.gitconfig /home/ubuntu/.gitconfig
     chown ubuntu:ubuntu /home/ubuntu/.gitconfig
+    cp /opt/stack/trove-tester/files/.ssh_config /home/ubuntu/.ssh/config
+    chown ubuntu:ubuntu /home/ubuntu/.ssh/config
 }
 
 add_fix_iptables
