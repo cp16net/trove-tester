@@ -73,7 +73,13 @@ Syncronize the all the projects in `../` local directory to `/opt/stack`
 remote directory. Also setup a few helper commands once you ssh into your
 remote system.
 
-    fab sync
+    fab host sync
+
+The command `host` will allow you to choose the host that you want to run
+the following commands on. The `host` command reads the list of hosts
+in your `~/.ssh/config` file. You can still pass in the host like below.
+
+    fab -H myhost sync
 
 ssh into your remote system after running the `fab sync` cmd and your should
 have a few convience commands you are run.
