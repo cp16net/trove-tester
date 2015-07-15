@@ -63,7 +63,6 @@ def host():
         hosts = local('cat ~/.ssh/config | grep "Host "', capture=True)
         hosts = hosts.split('\n')
         hosts = [host.split(' ')[1] for host in hosts]
-        print(hosts)
         for x, host in enumerate(hosts):
             print(green('%s\t%s' % (x, host)))
         selected_host = prompt("Choose a host:")
@@ -119,7 +118,7 @@ def boot(name=None):
                        region_name=OS_REGION_NAME) as cli:
         flavor = _flavor_list(cli)
         image = _image_list(cli)
-        network = _network_list(cli)
+        network = _network_list()
         print(cyan('%s, %s, %s' % (flavor, image, network)))
         server_name = name or prompt("Choose a server name:")
         nics = [{'net-id': network['id']}]
@@ -144,25 +143,39 @@ def boot(name=None):
 def _flavor_list(client):
     print('Flavors')
     flavors = client.flavors.list()
-    for x, f in enumerate(flavors):
-        print(green('%s\t%s\t\t%s' % (x, f.name, f.ram)))
+    output = "{id:<4s}{name:21s}{ram:6s}{vcpus}".format(
+            id="ID",
+            name="NAME",
+            ram="RAM",
+            vcpus="VCPUS",
+            )
+    print(green(output))
+    for x, f in enumerate(flavors, 1):
+        output = "{id:<4d}{name:16s}{ram:8d}{vcpus:4d}".format(
+            id=x,
+            name=f.name,
+            ram=f.ram,
+            vcpus=f.vcpus,
+            )
+        print(green(output))
     selected_flavor = prompt("Choose a flavor number:")
-    return flavors[int(selected_flavor)]
+    return flavors[int(selected_flavor)-1]
 
 
 def _image_list(client):
     print('Images')
     images = client.images.list()
-    for x, i in enumerate(images):
-        if 'deprecated' in i.name:
-            continue
-        else:
-            print(green('%s\t%s' % (x, i.name)))
-    selected_image = prompt("Choose an image number:")
-    return images[int(selected_image)]
+    print(images[0].__dict__)
+    sorted_images = sorted(images, key=lambda x: x.name)
+    sorted_images = [image for image in sorted_images
+                     if 'deprecated' not in image.name]
+    for x, i in enumerate(sorted_images, 1):
+        print(green('%s\t%s' % (x, i.name)))
+    selected_image = prompt("Choose an image number:", default='40')
+    return sorted_images[int(selected_image)-1]
 
 
-def _network_list(client):
+def _network_list():
     print('Networks')
     neutron = nclient.Client('2.0',
                              username=OS_USERNAME,
@@ -171,15 +184,26 @@ def _network_list(client):
                              auth_url=OS_AUTH_URL,
                              region_name=OS_REGION_NAME)
     networks = neutron.list_networks().get('networks')
-    for x, n in enumerate(networks):
+    for x, n in enumerate(networks, 1):
         print(green('%s\t%s' % (x, n['name'])))
     selected_network = prompt("Choose a network number:")
-    return networks[int(selected_network)]
+    return networks[int(selected_network)-1]
 
 
 def _floating_ip_list(client):
     floating_ips = client.floating_ips.list()
-    for x, i in enumerate(floating_ips):
-        print(green('%s\t%s' % (x, i)))
+    output = "{id:<4s}{ip:18s}{fixed_ip}".format(
+            id="ID",
+            ip="PUBLIC_IP",
+            fixed_ip="FIXED_IP"
+            )
+    print(green(output))
+    for x, i in enumerate(floating_ips, 1):
+        output = "{id:<4d}{ip:18s}{fixed_ip:8s}".format(
+            id=x,
+            ip=i.ip,
+            fixed_ip=i.fixed_ip,
+            )
+        print(green(output))
     selected_floating_ip = prompt("Choose a floating ip number:")
-    return floating_ips[int(selected_floating_ip)]
+    return floating_ips[int(selected_floating_ip)-1]
