@@ -34,7 +34,7 @@ function install_dependencies() {
     apt-get -y install git curl wget build-essential python-mysqldb \
         python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
         python-pip libmysqlclient-dev screen emacs24-nox \
-        libsasl2-dev tmux
+        libsasl2-dev tmux, ruby
     pip install virtualenv
     pip install tox==1.6.1
     pip install setuptools
@@ -42,6 +42,10 @@ function install_dependencies() {
     chown ubuntu:ubuntu /home/ubuntu/.gitconfig
     cp /opt/stack/trove-tester/files/.ssh_config /home/ubuntu/.ssh/config
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config
+    gem install tmuxinator
+    wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O ~/.tmuxinator.bash
+    source ~/.tmuxinator.bash
+    cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
 }
 
 add_fix_iptables
@@ -49,4 +53,13 @@ add_redstack
 add_mycnf
 install_dependencies
 
-sudo su - ubuntu -c "redstack install && redstack kick-start mysql"
+# this never works right... i think because it times out or something.
+# sudo su - ubuntu -c "redstack install && redstack kick-start mysql"
+
+echo "DO THIS STUFF"
+echo "redstack install && redstack kick-start mysql"
+echo "or add the TROVE_BRANCH= for a branch that you are working on."
+echo ""
+echo "love me some tmux."
+echo ""
+echo "mux start devstack-dev"

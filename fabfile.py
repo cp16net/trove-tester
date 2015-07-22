@@ -77,7 +77,7 @@ def prep(run_once=None):
         if exists(test_file):
             print(cyan("Prep has already run."))
             return
-    sudo('/opt/stack/trove-tester/prep.sh')
+    sudo('/opt/stack/trove-tester/prep.sh', timeout=2400)
 
 
 @task
