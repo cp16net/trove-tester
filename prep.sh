@@ -44,7 +44,7 @@ function install_dependencies() {
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config
     gem install tmuxinator
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O ~/.tmuxinator.bash
-    source ~/.tmuxinator.bash
+    printf "\nsource ~/.tmuxinator.bash \n" >> /home/ubuntu/.bashrc
     cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
 }
 
