@@ -43,9 +43,12 @@ function install_dependencies() {
     cp /opt/stack/trove-tester/files/.ssh_config /home/ubuntu/.ssh/config
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config
     gem install tmuxinator
-    wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O ~/.tmuxinator.bash
+    wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O /home/ubuntu/.tmuxinator.bash
+    chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
     printf "\nsource ~/.tmuxinator.bash \n" >> /home/ubuntu/.bashrc
     cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
+    chown ubuntu:ubuntu -R /home/ubuntu/.tmuxinator/
+
 }
 
 add_fix_iptables
