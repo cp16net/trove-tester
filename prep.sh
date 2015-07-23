@@ -45,7 +45,7 @@ function install_dependencies() {
     gem install tmuxinator
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O /home/ubuntu/.tmuxinator.bash
     chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
-    printf "\nsource ~/.tmuxinator.bash \n" >> /home/ubuntu/.bashrc
+    printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc\n" >> /home/ubuntu/.bashrc
     cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
     chown ubuntu:ubuntu -R /home/ubuntu/.tmuxinator/
 
@@ -61,7 +61,7 @@ install_dependencies
 
 echo "DO THIS STUFF"
 echo "redstack install && redstack kick-start mysql"
-echo "or add the TROVE_BRANCH= for a branch that you are working on."
+echo "or add the TROVE_BRANCH= for a branch that you are working on after commiting all changes to the branch."
 echo ""
 echo "love me some tmux."
 echo ""
