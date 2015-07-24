@@ -46,6 +46,7 @@ function install_dependencies() {
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O /home/ubuntu/.tmuxinator.bash
     chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
     printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc\n" >> /home/ubuntu/.bashrc
+    chown ubuntu:ubuntu /home/ubuntu/.bashrc
     cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
     chown ubuntu:ubuntu -R /home/ubuntu/.tmuxinator/
 
