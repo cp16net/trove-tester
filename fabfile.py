@@ -72,6 +72,7 @@ def host():
 
 @task
 def prep(run_once=None):
+    """Preps the host by setting up """
     test_file = "/home/ubuntu/.my.cnf"
     if run_once:
         if exists(test_file):
@@ -158,7 +159,7 @@ def _flavor_list(client):
             vcpus=f.vcpus,
             )
         print(green(output))
-    selected_flavor = prompt("Choose a flavor number:")
+    selected_flavor = prompt("Choose a flavor number:", default='6')
     return flavors[int(selected_flavor)-1]
 
 
@@ -186,7 +187,7 @@ def _network_list():
     networks = neutron.list_networks().get('networks')
     for x, n in enumerate(networks, 1):
         print(green('%s\t%s' % (x, n['name'])))
-    selected_network = prompt("Choose a network number:")
+    selected_network = prompt("Choose a network number:", default='3')
     return networks[int(selected_network)-1]
 
 

@@ -34,7 +34,7 @@ function install_dependencies() {
     apt-get -y install git curl wget build-essential python-mysqldb \
         python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
         python-pip libmysqlclient-dev screen emacs24-nox \
-        libsasl2-dev tmux, ruby
+        libsasl2-dev tmux ruby
     pip install virtualenv
     pip install tox==1.6.1
     pip install setuptools
@@ -45,8 +45,22 @@ function install_dependencies() {
     gem install tmuxinator
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O /home/ubuntu/.tmuxinator.bash
     chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
+
     printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc\n" >> /home/ubuntu/.bashrc
+    echo "
+function delete-all-clusters() {
+    ids=$(trove cluster-list | grep percona | awk '{print $2}')
+    for id in $ids;
+    do
+        echo trove cluster-delete $id
+        trove cluster-delete $id && echo "deleted $id"
+    done
+}
+
+" >> /home/ubuntu/.bashrc
+
     chown ubuntu:ubuntu /home/ubuntu/.bashrc
+    mkdir -p /home/ubuntu/.tmuxinator/
     cp /opt/stack/trove-tester/files/devstack-dev.yml /home/ubuntu/.tmuxinator/
     chown ubuntu:ubuntu -R /home/ubuntu/.tmuxinator/
 
