@@ -46,7 +46,7 @@ function install_dependencies() {
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.bash -O /home/ubuntu/.tmuxinator.bash
     chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
 
-    printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc\n" >> /home/ubuntu/.bashrc
+    printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc alt_demo alt_demo\n" >> /home/ubuntu/.bashrc
     echo "
 function delete-all-clusters() {
     ids=$(trove cluster-list | grep percona | awk '{print $2}')

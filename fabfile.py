@@ -27,7 +27,8 @@ OS_AUTH_URL = env.OS_AUTH_URL
 OS_REGION_NAME = env.OS_REGION_NAME
 KEYPAIR_NAME = env.KEYPAIR_NAME
 
-SYNC_EXCLUDES = ('*.vagrant', '*.tox', '*.log', '*.cache', '*.pyc', '*.venv')
+SYNC_EXCLUDES = ('*.vagrant', '*.tox', '*.log', '*.cache', '*.pyc',
+                 '*.venv', '*.sqlite*', 'cover/', '.testrepository')
 SSH_CONFIG = '~/.ssh/config'
 REMOTE_HOSTS_FILE = '/etc/hosts'
 
