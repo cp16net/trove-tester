@@ -32,8 +32,7 @@ Fabric
 Create a new virtualenv and install the dependencies (ALWAYS create new
 python virutalenvs when working on a project)
 
-    mkvirtualenv test
-    pip install fabric
+    mkvirtualenv test -r requirments.txt
     fab -l
 
 After you have the virtualenv and need to use it later do this.
