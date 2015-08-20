@@ -2,7 +2,6 @@ from os.path import expanduser
 
 from fabric.api import abort
 from fabric.api import env
-from fabric.api import lcd
 from fabric.api import local
 from fabric.api import run
 from fabric.api import sudo
