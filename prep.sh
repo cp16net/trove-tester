@@ -47,17 +47,6 @@ function install_dependencies() {
     chown ubuntu:ubuntu /home/ubuntu/.tmuxinator.bash
 
     printf "\nsource ~/.tmuxinator.bash \nsource ~/devstack/openrc alt_demo alt_demo\n" >> /home/ubuntu/.bashrc
-    echo "
-function delete-all-clusters() {
-    ids=$(trove cluster-list | grep percona | awk '{print $2}')
-    for id in $ids;
-    do
-        echo trove cluster-delete $id
-        trove cluster-delete $id && echo "deleted $id"
-    done
-}
-
-" >> /home/ubuntu/.bashrc
 
     chown ubuntu:ubuntu /home/ubuntu/.bashrc
     mkdir -p /home/ubuntu/.tmuxinator/
