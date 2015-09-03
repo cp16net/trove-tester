@@ -21,14 +21,17 @@ from novaclient.v2.shell import _poll_for_status
 
 from paramiko.config import SSHConfig
 
-OS_VERSION = env.OS_VERSION
-OS_USERNAME = env.OS_USERNAME
-OS_PASSWORD = env.OS_PASSWORD
-OS_TENANT_NAME = env.OS_TENANT_NAME
-OS_TENANT_ID = env.OS_TENANT_ID
-OS_AUTH_URL = env.OS_AUTH_URL
-OS_REGION_NAME = env.OS_REGION_NAME
-KEYPAIR_NAME = env.KEYPAIR_NAME
+try:
+    OS_VERSION = env.OS_VERSION
+    OS_USERNAME = env.OS_USERNAME
+    OS_PASSWORD = env.OS_PASSWORD
+    OS_TENANT_NAME = env.OS_TENANT_NAME
+    OS_TENANT_ID = env.OS_TENANT_ID
+    OS_AUTH_URL = env.OS_AUTH_URL
+    OS_REGION_NAME = env.OS_REGION_NAME
+    KEYPAIR_NAME = env.KEYPAIR_NAME
+except AttributeError:
+    abort("Need to setup ~/.fabricrc file!")
 
 SYNC_EXCLUDES = ('*.vagrant', '*.tox', '*.log', '*.cache', '*.pyc',
                  '*.venv', '*.sqlite*', 'cover/', '.testrepository',
@@ -46,7 +49,7 @@ def host():
         # get host list from .ssh/config file
         hosts = local('cat ~/.ssh/config | grep "Host "', capture=True)
         hosts = hosts.split('\n')
-        hosts = [host.split(' ')[1] for host in hosts]
+        hosts = [host.split(' ')[1] for host in hosts if not host.startswith('#')]
         for x, host in enumerate(hosts):
             print(green('%s\t%s' % (x, host)))
         selected_host = prompt("Choose a host:")

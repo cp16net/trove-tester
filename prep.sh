@@ -55,10 +55,22 @@ function install_dependencies() {
 
 }
 
+function add_ssh_keys() {
+    FILES=/opt/stack/trove-tester/files/sshkeys/*
+    for f in $FILES
+    do
+      echo "Processing $f file..."
+      # take action on each file. $f store current file name
+      cat $f >> ~/.ssh/authorized_keys
+    done
+    chown ubuntu:ubuntu ~/.ssh/authorized_keys
+}
+
 add_fix_iptables
 add_redstack
 add_mycnf
 install_dependencies
+add_ssh_keys
 
 # this never works right... i think because it times out or something.
 # sudo su - ubuntu -c "redstack install && redstack kick-start mysql"
