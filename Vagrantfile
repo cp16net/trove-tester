@@ -2,7 +2,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/trusty64"
 
-
   config.vm.define :devstack do |devstack|
     devstack.vm.hostname = 'devstack'
 
@@ -15,6 +14,10 @@ Vagrant.configure("2") do |config|
     # share the development directories with the vm
     devstack.vm.synced_folder "../", "/trove", owner: "vagrant", group: "vagrant"
     devstack.vm.synced_folder "../trove", "/opt/stack/trove",
+      owner: "vagrant", group: "vagrant"
+    devstack.vm.synced_folder "../horizon", "/opt/stack/horizon",
+      owner: "vagrant", group: "vagrant"
+    devstack.vm.synced_folder "../trove-tester", "/opt/stack/trove-tester",
       owner: "vagrant", group: "vagrant"
     devstack.vm.synced_folder "../python-troveclient", "/opt/stack/python-troveclient",
       owner: "vagrant", group: "vagrant"
@@ -32,7 +35,7 @@ Vagrant.configure("2") do |config|
       apt-get -y install git curl wget build-essential python-mysqldb \
         python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
         python-pip libmysqlclient-dev screen emacs24-nox \
-        libsasl2-dev
+        libsasl2-dev tmux
       pip install virtualenv
       pip install tox==1.6.1
       pip install setuptools
