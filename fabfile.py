@@ -1,3 +1,4 @@
+import os
 from os.path import expanduser
 
 from fabric.api import abort
@@ -10,6 +11,7 @@ from fabric.colors import green
 from fabric.colors import cyan
 from fabric.colors import yellow
 from fabric.operations import prompt
+from fabric.operations import reboot
 from fabric.contrib.project import rsync_project
 from fabric.contrib.files import exists
 from fabric.contrib.console import confirm
@@ -40,6 +42,7 @@ SSH_CONFIG = '~/.ssh/config'
 REMOTE_HOSTS_FILE = '/etc/hosts'
 
 env.use_ssh_config = True
+BOOT_DEFAULT = os.getenv('BOOT_DEFAULT', '').upper()
 
 
 @task
@@ -49,7 +52,8 @@ def host():
         # get host list from .ssh/config file
         hosts = local('cat ~/.ssh/config | grep "Host "', capture=True)
         hosts = hosts.split('\n')
-        hosts = [host.split(' ')[1] for host in hosts if not host.startswith('#')]
+        hosts = [host.split(' ')[1] for host in hosts
+                 if not host.startswith('#')]
         for x, host in enumerate(hosts):
             print(green('%s\t%s' % (x, host)))
         selected_host = prompt("Choose a host:")
@@ -67,31 +71,61 @@ def prep(run_once=None):
     sudo('/opt/stack/trove-tester/prep.sh', timeout=2400)
 
 
+def _sync_project(project, remote_path):
+    rsync_project(local_dir="../%s/" % project,
+                  remote_dir="%s/%s" % (remote_path, project),
+                  exclude=SYNC_EXCLUDES)
+
+
 @task
-def sync(project=None):
+def sync(project=None, remote_path="/opt/stack", run_prep=True):
     """Sync the local code to the server and prep if needed."""
     sed(REMOTE_HOSTS_FILE,
         '^127.0.0.1 localhost$',
         '127.0.0.1 localhost %s' % env.host_string,
         use_sudo=True)
-    if not exists('/opt/stack'):
-        sudo('mkdir -p /opt/stack')
+    if not exists(remote_path):
+        sudo('mkdir -p %s' % remote_path)
         whoami = run("whoami")
-        sudo('chown %s -R /opt/stack' % whoami)
+        sudo('chown %s -R %s' % (whoami, remote_path))
+
     if project:
-        rsync_project(local_dir="../%s/" % project,
-                      remote_dir="/opt/stack/%s" % project,
+        _sync_project(project, remote_path)
+        if run_prep:
+            prep(run_once=True)
+        return
+
+    # choose what set of projects to sync
+    # 1 (default) for only trove projects checked out
+    # 2 for all projects checked out
+    projects = ['trove', 'trove-integration', 'python-troveclient',
+                'trove-tester']
+    print("1 - %s" % cyan(projects))
+    print("2 - %s" % cyan("everything"))
+    selected_projects = prompt("Choose what to sync:", default=1)
+    if int(selected_projects) == 1:
+        for project in projects:
+            _sync_project(project, remote_path)
+    elif int(selected_projects) == 2:
+        rsync_project(local_dir="../",
+                      remote_dir=remote_path,
                       exclude=SYNC_EXCLUDES)
     else:
-        rsync_project(local_dir="../",
-                      remote_dir="/opt/stack",
-                      exclude=SYNC_EXCLUDES)
-    prep(run_once=True)
+        abort("UNKNOWN OPTION SELECTED TRY AGAIN")
+    if run_prep:
+        prep(run_once=True)
 
 
 @task
-def boot(name=None):
-    """Boot a new server"""
+def boot(name=None, use_defaults=None):
+    """Boot a new server
+
+    name - allows to you set a name for the server without prompt
+    use_defaults - allows you to boot the default server config without prompt
+    """
+    if use_defaults:
+        global BOOT_DEFAULT
+        BOOT_DEFAULT = "TRUE"
     with client.Client(OS_VERSION,
                        OS_USERNAME,
                        OS_PASSWORD,
@@ -151,9 +185,12 @@ def _flavor_list(client):
             print(yellow(output))
         else:
             print(green(output))
-    selected_flavor = prompt(
-        "Choose a flavor number: (%s)" % yellow(default_flavor_name),
-        default=default_flavor_number)
+    if BOOT_DEFAULT == "TRUE" and default_flavor_number:
+        selected_flavor = default_flavor_number
+    else:
+        selected_flavor = prompt(
+            "Choose a flavor number: (%s)" % yellow(default_flavor_name),
+            default=default_flavor_number)
     return flavors[int(selected_flavor)-1]
 
 
@@ -172,9 +209,12 @@ def _image_list(client):
             print(yellow('%s\t%s' % (x, i.name)))
         else:
             print(green('%s\t%s' % (x, i.name)))
-    selected_image = prompt(
-        "Choose an image number: (%s)" % yellow(default_image_name),
-        default=default_image_number)
+    if BOOT_DEFAULT == "TRUE" and default_image_number:
+        selected_image = default_image_number
+    else:
+        selected_image = prompt(
+            "Choose an image number: (%s)" % yellow(default_image_name),
+            default=default_image_number)
     return sorted_images[int(selected_image)-1]
 
 
@@ -196,9 +236,12 @@ def _network_list():
             print(yellow('%s\t%s' % (x, n['name'])))
         else:
             print(green('%s\t%s' % (x, n['name'])))
-    selected_network = prompt(
-        "Choose a network number: (%s)" % yellow(default_network_name),
-        default=default_network_number)
+    if BOOT_DEFAULT == "TRUE" and default_network_number:
+        selected_network = default_network_number
+    else:
+        selected_network = prompt(
+            "Choose a network number: (%s)" % yellow(default_network_name),
+            default=default_network_number)
     return networks[int(selected_network)-1]
 
 
@@ -250,28 +293,35 @@ def _floating_ip_list(client, server_name):
     return floating_ips[int(selected_floating_ip)-1]
 
 
-# @task
-# def update():
-#     """Update the local code with the latest changes from github"""
-#     for d in ['trove', 'trove-integration', 'python-troveclient']:
-#         with lcd('../%s' % d):
-#             status = local('git status --short', capture=True)
-#             if status:
-#                 print(status)
-#                 abort("directory is not clean")
-#             local("git fetch origin")
-#             local("git pull --rebase origin master")
+@task
+def jenkins_setup():
+    # try:
+    #     run('cat /dev/zero | ssh-keygen -q -N ""')
+    # except:
+    #     pass
+    projects_path = "/home/ubuntu/projects"
+    sync(remote_path=projects_path, run_prep=False)
+    # sudo("apt-get install -y git")
+    # try:
+    #     sudo("git clone https://review.openstack.org/p/openstack-infra/system-config")  # noqa
+    # except:
+    #     pass
+    # sudo("/home/ubuntu/system-config/install_puppet.sh")
+    # sudo("/home/ubuntu/system-config/install_modules.sh")
+    # sudo("""puppet apply --debug --verbose
+    #      --modulepath=/home/ubuntu/system-config/modules:/etc/puppet/modules
+    #      -e \"class {
+    #      openstack_project::single_use_slave: install_users => false,
+    #      ssh_key =>
+    #      \\"$( cat /home/ubuntu/.ssh/id_rsa.pub | awk '{print $2}' )\\" }\" """)
+    # sudo("""puppet apply --debug --verbose --modulepath=/home/ubuntu/system-config/modules:/etc/puppet/modules -e \"class { openstack_project::single_use_slave: install_users => false, ssh_key => \\\"$( cat /home/ubuntu/.ssh/id_rsa.pub | awk '{print $2}' )\\\" }\"""")
+    sudo("%s/trove-tester/run_puppet.sh" % projects_path)
+    sudo("echo \"jenkins ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers")
 
+    # wait for instance to reboot
+    reboot(wait=120)
 
-# @task
-# def list():
-#     """List the servers on the cloud"""
-#     with client.Client(OS_VERSION,
-#                        OS_USERNAME,
-#                        OS_PASSWORD,
-#                        tenant_id=OS_TENANT_ID,
-#                        auth_url=OS_AUTH_URL,
-#                        region_name=OS_REGION_NAME) as cli:
-#         instances = cli.servers.list()
-#         for inst in instances:
-#             print(inst.name, inst.addresses)
+    # login with jenkins@host now
+    sudo('%s/trove-tester/jenkins_setup.sh' % projects_path, user='jenkins')
+
+    print("done...")

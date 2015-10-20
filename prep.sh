@@ -75,9 +75,12 @@ add_ssh_keys
 # this never works right... i think because it times out or something.
 # sudo su - ubuntu -c "redstack install && redstack kick-start mysql"
 
+pushd /opt/stack/trove
+TROVE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+popd
+
 echo "DO THIS STUFF"
-echo "redstack install && redstack kick-start mysql"
-echo "or add the TROVE_BRANCH= for a branch that you are working on after commiting all changes to the branch."
+echo "TROVE_BRANCH=${TROVE_BRANCH} redstack install && redstack kick-start mysql"
 echo ""
 echo "love me some tmux."
 echo ""
