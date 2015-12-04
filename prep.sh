@@ -38,6 +38,7 @@ EOF
 }
 
 function install_dependencies() {
+    printf "deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse\n" > /etc/apt/sources.list.d/backports.list
     apt-get update
     apt-get -y install git curl wget build-essential python-mysqldb \
         python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
