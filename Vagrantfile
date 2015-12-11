@@ -62,14 +62,14 @@ Vagrant.configure("2") do |config|
     machine.vm.box = "ubuntu-1404-server"
 
     # networking
-    machine.vm.network "private_network", ip: '192.168.33.10'
+    machine.vm.network "private_network", ip: '10.2.0.10'
     # machine.vm.network "public_network"
     machine.vm.network "forwarded_port", guest: 80, host: 8080
 
     # With so much RAM and CPUs
     machine.vm.provider :libvirt do |domain|
-      domain.memory = 16384
-      domain.cpus = 4
+      domain.memory = 32768
+      domain.cpus = 8
       domain.nested = true
     end
 
@@ -89,24 +89,24 @@ Vagrant.configure("2") do |config|
     machine.vm.synced_folder "../trove-tester", "/opt/stack/trove-tester",
       owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
 
-    machine.vm.provision :shell, :inline => <<-SCRIPT
-      apt-get update
-      apt-get -y install git curl wget build-essential python-mysqldb \
-        python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
-        python-pip libmysqlclient-dev screen emacs24-nox \
-        libsasl2-dev tmux
-      pip install virtualenv
-      pip install tox==1.6.1
-      pip install setuptools
-      mkdir -p /opt/stack
-      chown vagrant /opt/stack
-    SCRIPT
+    # machine.vm.provision :shell, :inline => <<-SCRIPT
+    #   apt-get update
+    #   apt-get -y install git curl wget build-essential python-mysqldb \
+    #     python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
+    #     python-pip libmysqlclient-dev screen emacs24-nox \
+    #     libsasl2-dev tmux
+    #   pip install virtualenv
+    #   pip install tox==1.6.1
+    #   pip install setuptools
+    #   mkdir -p /opt/stack
+    #   chown vagrant /opt/stack
+    # SCRIPT
 
     machine.vm.provision :shell, :inline => <<-SCRIPT
       printf '\nexport USING_VAGRANT=true' >> /home/vagrant/.bashrc
     SCRIPT
 
-    # machine.vm.provision "shell", path: "prep.sh", args: "vagrant"
+    machine.vm.provision "shell", path: "prep.sh", args: "vagrant"
 
   end
 
