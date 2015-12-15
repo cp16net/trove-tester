@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
     machine.vm.box = "ubuntu-1404-server"
 
     # networking
-    machine.vm.network "private_network", ip: '10.2.0.10'
+    machine.vm.network "private_network", ip: '192.168.33.10'
     # machine.vm.network "public_network"
     machine.vm.network "forwarded_port", guest: 80, host: 8080
 
@@ -104,6 +104,7 @@ Vagrant.configure("2") do |config|
 
     machine.vm.provision :shell, :inline => <<-SCRIPT
       printf '\nexport USING_VAGRANT=true' >> /home/vagrant/.bashrc
+      printf '\nexport USE_LARGE_VOLUME=true' >> /home/vagrant/.bashrc
     SCRIPT
 
     machine.vm.provision "shell", path: "prep.sh", args: "vagrant"

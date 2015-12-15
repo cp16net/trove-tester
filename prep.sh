@@ -75,14 +75,10 @@ function add_ssh_keys() {
     chown $MY_USER:$MY_USER /home/$MY_USER/.ssh/authorized_keys
 }
 
-# add_fix_iptables
 add_redstack
 add_mycnf
 install_dependencies
 add_ssh_keys
-
-# this never works right... i think because it times out or something.
-# sudo su - $MY_USER -c "redstack install && redstack kick-start mysql"
 
 pushd /opt/stack/trove
 TROVE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
