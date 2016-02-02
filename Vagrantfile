@@ -69,7 +69,7 @@ Vagrant.configure("2") do |config|
     # With so much RAM and CPUs
     machine.vm.provider :libvirt do |domain|
       domain.memory = 32768
-      domain.cpus = 8
+      domain.cpus = 4
       domain.nested = true
     end
 
@@ -79,15 +79,17 @@ Vagrant.configure("2") do |config|
     # machine.vm.provision :shell, path: "bootstrap.sh", args: "42", keep_color: true
 
     # share the development directories with the vm
+
     # machine.vm.synced_folder "../", "/trove", owner: "vagrant", group: "vagrant"
+
     machine.vm.synced_folder "../trove", "/opt/stack/trove",
       owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
     machine.vm.synced_folder "../trove-integration", "/opt/stack/trove-integration",
-      owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
+      owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite", "scripts/.cache/"]
     machine.vm.synced_folder "../python-troveclient", "/opt/stack/python-troveclient",
       owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
     machine.vm.synced_folder "../trove-tester", "/opt/stack/trove-tester",
-      owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
+      owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite", "_tmp_package/"]
 
     # machine.vm.provision :shell, :inline => <<-SCRIPT
     #   apt-get update
@@ -105,6 +107,7 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :shell, :inline => <<-SCRIPT
       printf '\nexport USING_VAGRANT=true' >> /home/vagrant/.bashrc
       printf '\nexport USE_LARGE_VOLUME=true' >> /home/vagrant/.bashrc
+      printf '\nexport USE_KVM=true' >> /home/vagrant/.bashrc
     SCRIPT
 
     machine.vm.provision "shell", path: "prep.sh", args: "vagrant"

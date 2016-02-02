@@ -12,7 +12,7 @@ mkdir -p $WORKSPACE
 
 # SPECIFY THE PROJECT AND BRANCH TO TEST
 export ZUUL_PROJECT=openstack/trove
-export ZUUL_BRANCH=master
+export ZUUL_BRANCH=stable/liberty
 export DATASTORE_TEST=mysql
 
 # GET COPY OF PROJECT WE ARE TESTING

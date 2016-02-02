@@ -80,6 +80,15 @@ def _sync_project(project, remote_path):
 @task
 def sync(project=None, remote_path="/opt/stack", run_prep=True):
     """Sync the local code to the server and prep if needed."""
+    # choose what set of projects to sync
+    # 1 (default) for only trove projects checked out
+    # 2 for all projects checked out
+    projects = ['trove', 'trove-integration', 'python-troveclient',
+                'trove-tester']
+    print("1 - %s" % cyan(projects))
+    print("2 - %s" % cyan("everything"))
+    selected_projects = prompt("Choose what to sync:", default=1)
+
     sed(REMOTE_HOSTS_FILE,
         '^127.0.0.1 localhost$',
         '127.0.0.1 localhost %s' % env.host_string,
@@ -95,14 +104,6 @@ def sync(project=None, remote_path="/opt/stack", run_prep=True):
             prep(run_once=True)
         return
 
-    # choose what set of projects to sync
-    # 1 (default) for only trove projects checked out
-    # 2 for all projects checked out
-    projects = ['trove', 'trove-integration', 'python-troveclient',
-                'trove-tester']
-    print("1 - %s" % cyan(projects))
-    print("2 - %s" % cyan("everything"))
-    selected_projects = prompt("Choose what to sync:", default=1)
     if int(selected_projects) == 1:
         for project in projects:
             _sync_project(project, remote_path)
@@ -295,19 +296,19 @@ def _floating_ip_list(client, server_name):
 
 @task
 def jenkins_setup():
-    # try:
-    #     run('cat /dev/zero | ssh-keygen -q -N ""')
-    # except:
-    #     pass
+    try:
+        run('cat /dev/zero | ssh-keygen -q -N ""')
+    except:
+        pass
     projects_path = "/home/ubuntu/projects"
     sync(remote_path=projects_path, run_prep=False)
-    # sudo("apt-get install -y git")
-    # try:
-    #     sudo("git clone https://review.openstack.org/p/openstack-infra/system-config")  # noqa
-    # except:
-    #     pass
-    # sudo("/home/ubuntu/system-config/install_puppet.sh")
-    # sudo("/home/ubuntu/system-config/install_modules.sh")
+    sudo("apt-get install -y git")
+    try:
+        sudo("git clone https://review.openstack.org/p/openstack-infra/system-config")  # noqa
+    except:
+        pass
+    sudo("/home/ubuntu/system-config/install_puppet.sh")
+    sudo("/home/ubuntu/system-config/install_modules.sh")
     # sudo("""puppet apply --debug --verbose
     #      --modulepath=/home/ubuntu/system-config/modules:/etc/puppet/modules
     #      -e \"class {

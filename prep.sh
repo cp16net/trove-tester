@@ -42,10 +42,15 @@ function install_dependencies() {
     apt-get update
     apt-get -y install git curl wget build-essential python-mysqldb libpq-dev \
         python-dev libssl-dev python-pip git-core libxml2-dev libxslt-dev \
-        python-pip libmysqlclient-dev screen emacs24-nox \
+        libmysqlclient-dev screen emacs24-nox \
         libsasl2-dev tmux ruby
+
+    wget https://bootstrap.pypa.io/get-pip.py
+    python get-pip.py
+    # new version of pip works now. version 8.0.0 was bad.
+    # pip install pip==7.1.2
     pip install virtualenv
-    pip install tox==1.6.1
+    pip install tox
     pip install setuptools
     cp /opt/stack/trove-tester/files/.gitconfig /home/$MY_USER/.gitconfig
     chown $MY_USER:$MY_USER /home/$MY_USER/.gitconfig
