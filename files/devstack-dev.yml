@@ -29,7 +29,7 @@ startup_window: cli
 
 windows:
   - editor: screen -x
-  - cli: source ~/devstack/openrc && trove list
+  - cli: source ~/devstack/openrc && trove datastore-list && trove list
   - other1: source ~/devstack/openrc
   - other2: source ~/devstack/openrc
   - other3: source ~/devstack/openrc
