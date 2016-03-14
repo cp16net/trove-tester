@@ -91,6 +91,9 @@ Vagrant.configure("2") do |config|
     machine.vm.synced_folder "../trove-tester", "/opt/stack/trove-tester",
       owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite", "_tmp_package/"]
 
+    machine.vm.synced_folder "../trove-dashboard", "/opt/stack/trove-dashboard",
+      owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", ".venv", "*.pyc", "*.egg-info/", "*.log", "*.sqlite"]
+
     # machine.vm.provision :shell, :inline => <<-SCRIPT
     #   apt-get update
     #   apt-get -y install git curl wget build-essential python-mysqldb \
