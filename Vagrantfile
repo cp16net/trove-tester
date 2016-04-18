@@ -59,7 +59,7 @@ Vagrant.configure("2") do |config|
   config.vm.define :devstack do |machine|
 
     # It should be an Ubuntu 14.04 box
-    machine.vm.box = "ubuntu-1404-server"
+    machine.vm.box = "ubuntu/trusty64"
 
     # networking
     machine.vm.network "private_network", ip: '192.168.33.10'
@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
 
     # share the development directories with the vm
 
-    # machine.vm.synced_folder "../", "/trove", owner: "vagrant", group: "vagrant"
+    # machine.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", type: "rsync"
 
     machine.vm.synced_folder "../trove", "/opt/stack/trove",
       owner: "vagrant", group: "vagrant", type: "rsync", rsync__exclude: [".tox/", "*.egg-info/", "*.log", "*.sqlite"]
